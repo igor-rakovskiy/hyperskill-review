@@ -6,7 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    private static String  abc = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    //объявил как final
+    private static final String DICTIONARY = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public static void main(String[] args) throws IOException {
         try (Socket socket = new Socket(args[0], Integer.parseInt(args[1]));
@@ -36,19 +37,22 @@ public class Main {
                 long time = 0;
                 char charResult = 0;
 
-                while (index < abc.length()) {
-                    char num = abc.charAt(index);
-                    String numPass =password + abc;
-                    long timeStart = System.currentTimeMillis();
+                while (index < DICTIONARY.length()) {
+                    char num = DICTIONARY.charAt(index);
+                    String numPass =password + num; исправил
+
                     // время ответа сервера
-                    long timeResp = System.currentTimeMillis() - timeStart;
+                    long timeStart = System.nanoTime();
+                  //измерял время null))
                     String response = send(login, numPass, output, input);
+                    long timeResp = System.nanoTime(); - timeStart;
+
 
                     if (response.contains("Connection success!")) {
-                        String result = """
-                         {"login":"%s","password":"%s"}""".formatted(login, num);
-                        System.out.println(result);
-                        return;
+                        String result = "{\"login\":\"%s\",\"password\":\"%s\"}%n",
+                         login,
+                         numPass);
+                         return;
                     }
 
                     if (timeResp > time) {
@@ -57,8 +61,8 @@ public class Main {
                     }
                     index++;
                 }
-                // добавляем найденный символ к паролю
-                password = charResult + password;
+                // поменял местами, символ добавляля в начало
+                password = password + charResult;
             }
         }
     }
