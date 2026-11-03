@@ -9,11 +9,9 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Main {
-
+    private static final String ADDRESS = "127.0.0.1";
+    private static final int PORT = 23456;
     public static void main(String[] args) throws IOException {
-        String address = "127.0.0.1";
-        int port = 23456;
-
         String type = null;
         String key = null;
         String value = null;
@@ -67,28 +65,22 @@ public class Main {
 
         Gson gson = new Gson();
         String requestJson = gson.toJson(request); //преобразование в строку
+        sendRequest(requestJson);
 
-        try (
-                Socket socket = new Socket(address, port);
+        private static void sendRequest(String requestJson) throws IOException {
+            try (
+                    Socket socket = new Socket(ADDRESS, PORT);
+                    DataInputStream input = new DataInputStream(socket.getInputStream());
+                    DataOutputStream output = new DataOutputStream(socket.getOutputStream())
+            ) {
+                System.out.println("Client started!");
 
-                DataInputStream input = new DataInputStream(
-                        socket.getInputStream()
-                );
+                output.writeUTF(requestJson);
+                System.out.println("Sent: " + requestJson);
 
-                DataOutputStream output = new DataOutputStream(
-                        socket.getOutputStream()
-                )
-        ) {
-            System.out.println("Client started!");
-
-            output.writeUTF(requestJson); //отправляем строку
-
-
-            System.out.println("Sent: " + requestJson);
-
-            String response = input.readUTF();
-
-            System.out.println("Received: " + response);
+                String response = input.readUTF();
+                System.out.println("Received: " + response);
+            }
         }
     }
 }

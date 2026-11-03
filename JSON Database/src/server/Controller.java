@@ -25,11 +25,11 @@ public class Controller {
 
             case "exit":
                 return createOkResponse();
-
+            default: return createErrorResponse("Unknown command"); //вызвал сообщение об ошибке
                  }
-        return null;
-    }
 
+    }
+    //вынес из main
     private JsonObject set(JsonObject request) {
         String key = request.get("key").getAsString();
         String value = request.get("value").getAsString();
